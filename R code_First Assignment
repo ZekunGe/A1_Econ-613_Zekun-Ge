@@ -452,7 +452,6 @@ head(Final_Result, 20)
 #  10101      10101Agriculture 230756   288   14    0     Agriculture     Accra Metropolitan      3           10101Agriculture
 
 
-
 # cutoff_Low to Top   quality_Average   Score size_Number of Admission    X.y                     schoolname
 #       288                 309.0889                45                   3247                                       
 #       288                 309.0889                45                   3560                                       
@@ -474,6 +473,7 @@ head(Final_Result, 20)
 #       288                 309.0889                45                   2881                                       
 #       288                 309.0889                45                   328       EBENEZER SENIOR HIGH. SCHOOL, DANSOMAN
 #       288                 309.0889                45                   453       EBENEZER SENIOR HIGH. SCHOOL, DANSOMAN
+
 
 #   sssdistrict         ssslong       ssslat
 #   Accra Metro            NA           NA
@@ -501,7 +501,7 @@ head(Final_Result, 20)
 #================================================================================================
 
 ##/ Exercise Three
-# Merge the result of Exercise and dataset "datajss"
+# Merge the result of Exercise Two and dataset "datajss"
 Distance <- merge(Final_Result, datajss, by="jssdistrict")
 head(Distance, 20)
 Distance_X_Bottom_To_Top <- Distance[order(Distance$X),]
@@ -949,7 +949,7 @@ coef(reg_logit)
 #/ In each individual regression model, the coefficients of "Interpret", "x1", "x2" are statistically significant at 0.1% significance level. However, the coefficient of "x3" in each regression remains statistical insignificant.
 
 
-##/ (Average) Marginal Effects
+##/ (Partial) Marginal Effects
 ##/ do it by hand
 #/ Probit
 reg_probit <- glm(ydum ~ 1 + x1 + x2 + x3,family = binomial(link = "probit"))
