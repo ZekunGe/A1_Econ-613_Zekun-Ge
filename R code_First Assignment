@@ -955,20 +955,20 @@ coef(reg_logit)
 reg_probit <- glm(ydum ~ 1 + x1 + x2 + x3,family = binomial(link = "probit"))
 marginal_effects_Estimation_probit <- function(reg_probit,sims=10000){
   set.seed(1234)
-  pdf <- ifelse(as.character(reg_probit$call)[3]=="binomial(link = \"probit\")",
+  pdf_probit <- ifelse(as.character(reg_probit$call)[3]=="binomial(link = \"probit\")",
                 mean(dnorm(predict(reg_probit, type = "link"))),
                 mean(dlogis(predict(reg_probit, type = "link"))))
-  pdfsd <- ifelse(as.character(reg_probit$call)[3]=="binomial(link = \"probit\")",
+  pdf_probit_sd <- ifelse(as.character(reg_probit$call)[3]=="binomial(link = \"probit\")",
                   sd(dnorm(predict(reg_probit, type = "link"))),
                   sd(dlogis(predict(reg_probit, type = "link"))))
-  marginal.effects <- pdf*coef(reg_probit)
-  sim <- matrix(rep(NA,sims*length(coef(reg_probit))), nrow=sims)
+  marginal.effects_probit <- pdf_probit*coef(reg_probit)
+  sim_probit <- matrix(rep(NA,sims*length(coef(reg_probit))), nrow=sims)
   for(i in 1:length(coef(reg_probit))){
-    sim[,i] <- rnorm(sims,coef(reg_probit)[i],diag(vcov(reg_probit)^0.5)[i])
+    sim_probit[,i] <- rnorm(sims,coef(reg_probit)[i],diag(vcov(reg_probit)^0.5)[i])
   }
-  pdfsim <- rnorm(sims,pdf,pdfsd)
-  sim.se <- pdfsim*sim
-  res <- cbind(marginal.effects,sd(sim.se))
+  pdfsim_probit <- rnorm(sims,pdf_probit,pdf_probit_sd)
+  sim.se_probit <- pdfsim_probit*sim_probit
+  res <- cbind(marginal.effects_probit,sd(sim.se_probit))
   colnames(res)[2] <- "standard.error"
   ifelse(names(reg_probit$coefficients[1])=="(Intercept)",
          return(res[2:nrow(res),]),return(res))
@@ -990,17 +990,17 @@ marginal_effects_Estimation_logit <- function(reg_logit,sims=10000){
   pdf_logit_sd <- ifelse(as.character(reg_logit$call)[3]=="binomial(link = \"logit\")",
                   sd(dnorm(predict(reg_logit, type = "link"))),
                   sd(dlogis(predict(reg_logit, type = "link"))))
-  marginal.effects <- pdf_logit*coef(reg_logit)
-  sim <- matrix(rep(NA,sims*length(coef(reg_logit))), nrow=sims)
+  marginal.effects_logit <- pdf_logit*coef(reg_logit)
+  sim_logit <- matrix(rep(NA,sims*length(coef(reg_logit))), nrow=sims)
   for(i in 1:length(coef(reg_logit))){
-    sim[,i] <- rnorm(sims,coef(reg_logit)[i],diag(vcov(reg_logit)^0.5)[i])
+    sim_logit[,i] <- rnorm(sims,coef(reg_logit)[i],diag(vcov(reg_logit)^0.5)[i])
   }
-  pdfsim <- rnorm(sims,pdf_logit,pdf_logit_sd)
-  sim.se <- pdfsim*sim
-  res <- cbind(marginal.effects,sd(sim.se))
-  colnames(res)[2] <- "standard.error"
+  pdfsim_logit <- rnorm(sims,pdf_logit,pdf_logit_sd)
+  sim.se_logit <- pdfsim_logit*sim_logit
+  res_logit <- cbind(marginal.effects_logit,sd(sim.se_logit))
+  colnames(res_logit)[2] <- "standard.error"
   ifelse(names(reg_logit$coefficients[1])=="(Intercept)",
-         return(res[2:nrow(res),]),return(res))
+         return(res_logit[2:nrow(res_logit),]),return(res_logit))
 }
 
 marginal_effects_Estimation_logit(reg_logit)
@@ -1046,4 +1046,5 @@ summary(margins(reg_logit))
 #   x1     0.1440  0.0044   32.6564   0.0000   0.1354  0.1527
 #   x2    -0.1110  0.0004 -246.8795   0.0000  -0.1119 -0.1101
 #   x3    -0.0013  0.0057   -0.2359   0.8135  -0.0125  0.0098
+
 
