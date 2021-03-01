@@ -1,0 +1,1049 @@
+setwd("/Users/zg66/Desktop/Econ613-master")
+
+datajss<-read.csv("file:///Users/zg66/Desktop/Econ613-master/Assignments/A1/dat/datjss.csv")
+datasss<-read.csv("file:///Users/zg66/Desktop/Econ613-master/Assignments/A1/dat/datsss.csv")
+datastu<-read.csv("file:///Users/zg66/Desktop/Econ613-master/Assignments/A1/dat/datstu.csv")
+stu_wait_datastu <- read.table("file:///Users/zg66/Desktop/Econ613-master/Assignments/A1/dat/datstu.csv", head= TRUE, sep=",", na.strings=c("","NA"))
+
+#==================================================
+#==================================================
+
+##/ Exercise One
+
+##/ Number of student
+stunum<- c("score")
+head(datastu[stunum])
+summary(datastu[stunum])
+# install.packages("pastecs")
+library(pastecs)
+stat.desc(datastu[stunum])
+# install.packages("Hmisc")
+library(Hmisc)
+describe(datastu[stunum])
+##/ We could see that there are 340823 student applicant. 
+
+##/ Number of schools
+schnum<- c("schoolcode")
+head(datasss[schnum])
+library(pastecs)
+stat.desc(datasss[schnum])
+library(Hmisc)
+describe(datasss[schnum])
+##/ There are 898 distinct schools.
+
+##/ Number of programs
+pronum1<- c("choicepgm1")
+table(datastu[pronum1])
+pronum2<- c("choicepgm2")
+table(datastu[pronum2])
+pronum3<- c("choicepgm3")
+table(datastu[pronum3])
+pronum4<- c("choicepgm4")
+table(datastu[pronum4])
+pronum5<- c("choicepgm5")
+table(datastu[pronum3])
+pronum6<- c("choicepgm6")
+table(datastu[pronum4])
+##/ There are 32 different programs.
+
+##/ Another way of getting the number of programs
+Number_of_schools = stu_wait_datastu[ , c(1,11:16)]
+library(reshape)
+melt_num_school <- melt(Number_of_schools, id="X")
+code_of_programs <- melt_num_school[ , 3]
+Number_of_programs = length(unique(na.omit(code_of_programs)))
+summary(Number_of_programs)
+# Min. 1st Qu.  Median    Mean  3rd Qu.   Max. 
+# 32      32      32       32     32      32 
+
+##/ Number of choices
+school_list = stu_wait_datastu[ , c(1,5:10)]
+library(reshape)
+md_school_list <- melt(school_list, id="X")
+code_of_schools <- md_school_list[ , 3]
+md_num_choices <- cbind(code_of_schools,code_of_programs)
+Total_choice <- unique(na.omit(md_num_choices))
+Number_of_choices<- length(Total_choice)
+summary(Number_of_choices)
+#  Min.   1st Qu.  Median    Mean   3rd Qu.    Max. 
+#  5546    5546     5546     5546    5546      5546 
+
+##/ Missing test score
+library(pastecs)
+stat.desc(datastu[stunum])
+##/ There are 179887 missing test score. 
+
+##/Number of applying to the same school
+Same_school_list <- unique(na.omit(md_num_choices))
+Num_Same_School <- length(Same_school_list)
+summary(Num_Same_School)
+# Min.   1st Qu.  Median    Mean   3rd Qu.    Max. 
+# 5546    5546     5546     5546    5546     5546 
+
+##/ Number of appkyting to less than 6 choices
+Total_choice_missing <- stu_wait_datastu[ ,16]
+Number_less_6 <- sum(is.na(Total_choice_missing))
+summary(Number_less_6)
+#  Min.   1st Qu.  Median   Mean   3rd Qu.    Max. 
+# 18954   18954    18954   18954   18954     18954
+
+#==================================================
+#==================================================
+
+##/ Exercise Two
+list_waiting <- read.table("file:///Users/zg66/Desktop/Econ613-master/Assignments/A1/dat/datstu.csv", head= TRUE, sep=",", na.strings=c("","NA","99"))
+list_final <- na.omit(list_waiting)
+Admitted_by_1 <- list_final[which(list_final$rankplace == 1), ]
+Accepted_by_1 <- Admitted_by_1[ , c(-6,-7,-8,-9,-10,-12,-13,-14,-15,-16)]
+names(Accepted_by_1) [5:6] <- c("schoolcode","choicepgm")
+print(Accepted_by_1)
+head(Accepted_by_1, 20)
+#   X     score agey  male  schoolcode      choicepgm                   jssdistrict               rankplace
+#  179893   237  18    1      30403        General Arts        Ajumako/Enyan/Essiam (Ajumako)         1
+#  179896   229  17    0      30403        General Arts                 Mfantsiman (Saltpond)         1
+#  179900   235  18    0      30403        General Arts Abura/Asebu/Kwamankese (Abura Dunkwa)         1
+#  179902   250  17    0      30403        General Arts Abura/Asebu/Kwamankese (Abura Dunkwa)         1
+#  179914   244  18    0      30403       Home Economics                   Ga West (Amasaman)         1
+#  179925   212  16    0      30403        General Arts Abura/Asebu/Kwamankese (Abura Dunkwa)         1
+#  179931   217  15    1      30403        General Arts Abura/Asebu/Kwamankese (Abura Dunkwa)         1
+#  179937   287  17    1      30403        General Arts Abura/Asebu/Kwamankese (Abura Dunkwa)         1
+#  179941   243  16    1      30403         Agriculture Abura/Asebu/Kwamankese (Abura Dunkwa)         1
+#  179953   261  19    1      30403         Agriculture Abura/Asebu/Kwamankese (Abura Dunkwa)         1
+#  179961   236  15    1      30403        General Arts Abura/Asebu/Kwamankese (Abura Dunkwa)         1
+#  179969   284  15    1      21001        General Arts                  Suhum/Kraboa/Coaltar         1
+#  179972   316  16    0      21001        General Arts                 Kwahu South (Mpraeso)         1
+#  179977   295  17    0      21001            Business                    Kwaebibirem (Kade)         1
+#  179980   299  17    0      21001        General Arts                 Kwahu South (Mpraeso)         1
+#  179981   288  15    1      21001        General Arts                    Accra Metropolitan         1
+#  179982   375  17    0      21001            Business                     Ga East (Abokobi)         1
+#  179983   325  17    0      21001        General Arts             Asante Akim South (Juaso)         1
+#  179985   288  16    0      21001        General Arts                    Ga West (Amasaman)         1
+#  179993   358  16    0      21001      Home Economics                    Accra Metropolitan         1
+
+Admitted_by_2 <- list_final[which(list_final$rankplace == 2), ]
+Accepted_by_2 <- Admitted_by_2[ , c(-5,-7,-8,-9,-10,-11,-13,-14,-15,-16)]
+names(Accepted_by_2) [5:6]<-c("schoolcode","choicepgm")
+print(Accepted_by_2)
+head(Accepted_by_2, 20)
+#    X     score agey male schoolcode    choicepgm                 jssdistrict               rankplace
+# 179890   254   19    1      30403     Agriculture Abura/Asebu/Kwamankese (Abura Dunkwa)         2
+# 179915   250   18    1      30403     Agriculture Abura/Asebu/Kwamankese (Abura Dunkwa)         2
+# 179919   223   19    1      30403    General Arts Abura/Asebu/Kwamankese (Abura Dunkwa)         2
+# 179926   259   15    0      30403    General Arts           Awutu/Efutu/Senya (Winneba)         2
+# 179938   240   17    1      30403     Agriculture Abura/Asebu/Kwamankese (Abura Dunkwa)         2
+# 179952   237   16    0      30403  Home Economics              Assin North (Assin Fosu)         2
+# 179956   252   20    1      30403     Agriculture                     Dangme East (Ada)         2
+# 179959   240   16    1      30403  Home Economics Abura/Asebu/Kwamankese (Abura Dunkwa)         2
+# 179962   229   17    1      30403    General Arts Abura/Asebu/Kwamankese (Abura Dunkwa)         2
+# 179964   250   19    1      30403    General Arts Abura/Asebu/Kwamankese (Abura Dunkwa)         2
+# 179968   257   16    0      21001 General Science                    Accra Metropolitan         2
+# 179976   302   17    1      21001    General Arts                 Kwahu South (Mpraeso)         2
+# 179978   267   15    0      21001  Home Economics                    Ga West (Amasaman)         2
+# 179988   284   16    1      21001        Business                 Kwahu South (Mpraeso)         2
+# 179990   253   16    1      21001     Visual Arts                    Accra Metropolitan         2
+# 180003   335   15    0      21001    General Arts                    Accra Metropolitan         2
+# 180004   297   17    0      21001  Home Economics                                  Tema         2
+# 180008   331   15    1      21001        Business                    Accra Metropolitan         2
+# 180011   282   17    1      21001 General Science              Kwahu North (Donkorkrom)         2
+# 180012   296   15    1      21001    General Arts                    Accra Metropolitan         2
+
+Admitted_by_3 <- list_final[which(list_final$rankplace == 3), ]
+Accepted_by_3 <- Admitted_by_3[ , c(-5,-6,-8,-9,-10,-11,-12,-14,-15,-16)]
+names(Accepted_by_3) [5:6]<-c("schoolcode","choicepgm")
+print(Accepted_by_3)
+head(Accepted_by_3, 20)
+#   X     score agey male schoolcode    choicepgm               jssdistrict                  rankplace
+# 179892   236   16    0      30403    General Arts Abura/Asebu/Kwamankese (Abura Dunkwa)         3
+# 179898   227   17    0      30403     Agriculture                 Mfantsiman (Saltpond)         3
+# 179899   220   18    1      30403     Agriculture                 Mfantsiman (Saltpond)         3
+# 179901   230   16    1      30403     Agriculture Abura/Asebu/Kwamankese (Abura Dunkwa)         3
+# 179939   240   18    0      30403     Agriculture       Assin South (Nsuaem Kyekyewere)         3
+# 179945   238   15    1      30403    General Arts                    Accra Metropolitan         3
+# 179957   215   16    0      30403  Home Economics  Bosomtwe/Atwima/Kwanwoma (Kuntanase)         3
+# 179965   262   15    0      21001 General Science                 Kwahu South (Mpraeso)         3
+# 179970   313   15    0      21001    General Arts                     Ga East (Abokobi)         3
+# 179971   300   15    0      21001    General Arts             Birim North ( New Abirem)         3
+# 179973   344   15    1      21001    General Arts                    Ga West (Amasaman)         3
+# 179979   319   16    0      21001  Home Economics                    Accra Metropolitan         3
+# 179984   298   15    1      21001    General Arts                  Kwahu West (Nkawkaw)         3
+# 179987   293   14    1      21001    General Arts                    Accra Metropolitan         3
+# 179992   310   15    0      21001    General Arts                    Ga West (Amasaman)         3
+# 179998   322   15    1      21001    General Arts                New Juaben (Koforidua)         3
+# 180000   306   17    1      21001    General Arts           Asante Akim North (Konongo)         3
+# 180005   297   17    1      21001    General Arts                  Kwahu West (Nkawkaw)         3
+# 180006   271   14    0      21001 General Science              Kwahu North (Donkorkrom)         3
+# 180014   284   16    0      21001        Business                    Accra Metropolitan         3
+
+Admitted_by_4 <- list_final[which(list_final$rankplace == 4), ]
+Accepted_by_4 <- Admitted_by_4[ , c(-5,-6,-7,-9,-10,-11,-12,-13,-15,-16)]
+names(Accepted_by_4) [5:6] <- c("schoolcode","choicepgm")
+print(Accepted_by_4)
+head(Accepted_by_4, 20)
+#    X    score agey male schoolcode     choicepgm              jssdistrict                  rankplace
+# 179891   277   17    0      30403 Home Economics Abura/Asebu/Kwamankese (Abura Dunkwa)         4
+# 179903   226   18    1      30403   General Arts Abura/Asebu/Kwamankese (Abura Dunkwa)         4
+# 179904   262   16    0      30403   General Arts Abura/Asebu/Kwamankese (Abura Dunkwa)         4
+# 179907   281   15    1      30403    Agriculture       Assin South (Nsuaem Kyekyewere)         4
+# 179910   238   17    1      30403   General Arts Abura/Asebu/Kwamankese (Abura Dunkwa)         4
+# 179911   257   17    1      30403   General Arts Abura/Asebu/Kwamankese (Abura Dunkwa)         4
+# 179916   221   16    1      30403   General Arts Abura/Asebu/Kwamankese (Abura Dunkwa)         4
+# 179921   219   18    0      30403    Agriculture           Awutu/Efutu/Senya (Winneba)         4
+# 179927   253   16    1      30403   General Arts Abura/Asebu/Kwamankese (Abura Dunkwa)         4
+# 179934   258   18    1      30403   General Arts Abura/Asebu/Kwamankese (Abura Dunkwa)         4
+# 179935   226   15    1      30403    Agriculture                  Cape Coast Municipal         4
+# 179936   235   19    1      30403   General Arts Abura/Asebu/Kwamankese (Abura Dunkwa)         4
+# 179948   277   16    0      30403 Home Economics           Awutu/Efutu/Senya (Winneba)         4
+# 179974   302   18    0      21001       Business              Kwahu North (Donkorkrom)         4
+# 179975   278   16    1      21001       Business                 Kwahu South (Mpraeso)         4
+# 179989   255   20    1      21001    Visual Arts                                  Tema         4
+# 179999   277   17    1      21001   General Arts                  Kwahu West (Nkawkaw)         4
+# 180002   285   16    0      21001 Home Economics                     Ga East (Abokobi)         4
+# 180009   283   18    0      21001   General Arts                    Fanteakwa (Begoro)         4
+# 180034   305   16    1      21001   General Arts                    Accra Metropolitan         4
+
+Admitted_by_5 <- list_final[which(list_final$rankplace == 5), ]
+Accepted_by_5 <- Admitted_by_5[ , c(-5,-6,-7,-8,-10,-11,-12,-13,-14,-16)]
+names(Accepted_by_5) [5:6]<-c("schoolcode","choicepgm")
+print(Accepted_by_5)
+head(Accepted_by_5, 20)
+#    X    score agey male  schoolcode    choicepgm                    jssdistrict            rankplace
+# 179888   249   16    0      30403   General Arts                          Agona Swedru         5
+# 179895   249   15    1      30403   General Arts           Awutu/Efutu/Senya (Winneba)         5
+# 179909   268   18    1      30403   General Arts           Awutu/Efutu/Senya (Winneba)         5
+# 179912   229   17    1      30403   General Arts                 Mfantsiman (Saltpond)         5
+# 179918   232   18    1      30403   General Arts            Twifo Hemang (Twifo Praso)         5
+# 179920   255   17    0      30403   General Arts        Ajumako/Enyan/Essiam (Ajumako)         5
+# 179949   241   13    0      30403 Home Economics                  Cape Coast Municipal         5
+# 179951   239   17    1      30403   General Arts              Assin North (Assin Fosu)         5
+# 179954   227   16    0      30403       Business                 Mfantsiman (Saltpond)         5
+# 180532   217   18    0      70503       Business                                Akatsi         5
+# 180540   210   19    1      70503       Business                                  Keta         5
+# 180551   217   17    0      70503       Business                           Ketu (Denu)         5
+# 180576   211   15    0      70503 Home Economics                                  Keta         5
+# 180756   209   22    1      70503    Visual Arts                                  Keta         5
+# 180767   211   15    0      70503       Business                           Ketu (Denu)         5
+# 180768   276   18    0      70503       Business                    South Dayi (Kpeve)         5
+# 180779   232   17    1      70503    Visual Arts                                  Keta         5
+# 180782   257   17    1      70503       Business                                  Keta         5
+# 181340   276   15    0      30402 Home Economics                  Cape Coast Municipal         5
+# 181370   216   20    1      30402 Home Economics Abura/Asebu/Kwamankese (Abura Dunkwa)         5
+
+Admitted_by_6 <- list_final[which(list_final$rankplace == 6), ]
+Accepted_by_6 <- Admitted_by_6[ , c(-5,-6,-7,-8,-9,-11,-12,-13,-14,-15)]
+names(Accepted_by_6) [5:6]<-c("schoolcode","choicepgm")
+print(Accepted_by_6)
+head(Accepted_by_6, 20)
+#    X    score agey male  schoolcode   choicepgm                   jssdistrict               rankplace
+# 179894   262   16    0      30403    Agriculture             Twifo Hemang (Twifo Praso)         6
+# 179897   219   18    1      30403   General Arts  Abura/Asebu/Kwamankese (Abura Dunkwa)         6
+# 179905   223   18    1      30403   General Arts                                Berekum         6
+# 179913   224   16    1      30403   General Arts  Abura/Asebu/Kwamankese (Abura Dunkwa)         6
+# 179922   293   15    1      30403   General Arts                           Agona Swedru         6
+# 179924   208   16    1      30403   General Arts                   Cape Coast Municipal         6
+# 179928   239   19    1      30403       Business                  Mfantsiman (Saltpond)         6
+# 179944   224   18    0      30403    Agriculture Asikuma/Odoben/Brakwa (Breman Asikuma)         6
+# 179946   256   15    0      30403 Home Economics         Ajumako/Enyan/Essiam (Ajumako)         6
+# 179958   297   14    0      30403   General Arts                           Gomoa (Apam)         6
+# 180549   210   18    1      70503       Business                 South Tongu (Sogakope)         6
+# 180619   219   18    1      70503       Business                                   Keta         6
+# 180646   219   16    0      70503       Business                                   Keta         6
+# 180716   226   16    0      70503 Home Economics                  North Tongu (Adidome)         6
+# 180762   270   15    1      70503       Business                 Adaklu Anigbe (Kpetoe)         6
+# 180789   216   15    0      70503 Home Economics                            Ketu (Denu)         6
+# 181337   288   16    0      30402 Home Economics                   Edina/Komenda/Eguafo         6
+# 181368   277   16    0      30402       Business            Awutu/Efutu/Senya (Winneba)         6
+# 181390   244   16    0      30402       Business  Abura/Asebu/Kwamankese (Abura Dunkwa)         6
+# 181414   269   20    1      30402       Business               Assin North (Assin Fosu)         6
+
+Combined_list_score <- rbind(Accepted_by_1 ,Accepted_by_2 ,Accepted_by_3 ,Accepted_by_4 ,Accepted_by_5 ,Accepted_by_6)
+Final_list <- Combined_list_score[order(Combined_list_score$schoolcode,Combined_list_score$choicepgm, Combined_list_score$score),]
+print(Final_list)
+head(Final_list, 20)
+#   X     score agey male   schoolcode   choicepgm         jssdistrict        rankplace
+# 230518   288   15    1      10101     Agriculture    Accra Metropolitan         3
+# 230756   288   14    0      10101     Agriculture    Accra Metropolitan         3
+# 230824   288   19    1      10101     Agriculture    Accra Metropolitan         3
+# 230386   289   17    0      10101     Agriculture          Kumasi Metro         1
+# 230627   291   16    1      10101     Agriculture          Kumasi Metro         4
+# 230893   292   16    0      10101     Agriculture    Ga West (Amasaman)         3
+# 230927   293   16    0      10101     Agriculture                  Tema         4
+# 230694   294   16    1      10101     Agriculture    Ga West (Amasaman)         4
+# 230578   295   19    1      10101     Agriculture    Accra Metropolitan         2
+# 230512   295   17    1      10101     Agriculture   Wassa West (Tarkwa)         3
+# 230546   296   15    0      10101     Agriculture    Accra Metropolitan         3
+# 230427   297   15    0      10101     Agriculture    Accra Metropolitan         1
+# 230655   298   17    1      10101     Agriculture    Accra Metropolitan         1
+# 230637   298   16    1      10101     Agriculture Mfantsiman (Saltpond)         2
+# 230918   298   17    1      10101     Agriculture    Accra Metropolitan         4
+# 230464   299   16    1      10101     Agriculture Mfantsiman (Saltpond)         2
+# 230695   299   16    1      10101     Agriculture    Accra Metropolitan         4
+# 230505   300   16    1      10101     Agriculture    Ga West (Amasaman)         3
+# 230816   302   20    1      10101     Agriculture    Ga West (Amasaman)         1
+# 230801   303   19    0      10101     Agriculture    Ga West (Amasaman)         2
+
+library(reshape)
+
+# pick up all titles that contain "choice"
+
+Final_list$choice<- paste0(Final_list$schoolcode,Final_list$choicepgm)
+head(Final_list$choice)
+print(Final_list$choice)
+
+# get the final admission list
+Admission_list<- Final_list[ , c(2,9)]
+value_Bottom_To_Top <- melt(Admission_list, id="choice")
+print(value_Bottom_To_Top)
+head(value_Bottom_To_Top, 20)
+#        "choice"       variable value
+# 1  10101Agriculture    score   288
+# 2  10101Agriculture    score   288
+# 3  10101Agriculture    score   288
+# 4  10101Agriculture    score   289
+# 5  10101Agriculture    score   291
+# 6  10101Agriculture    score   292
+# 7  10101Agriculture    score   293
+# 8  10101Agriculture    score   294
+# 9  10101Agriculture    score   295
+# 10 10101Agriculture    score   295
+# 11 10101Agriculture    score   296
+# 12 10101Agriculture    score   297
+# 13 10101Agriculture    score   298
+# 14 10101Agriculture    score   298
+# 15 10101Agriculture    score   298
+# 16 10101Agriculture    score   299
+# 17 10101Agriculture    score   299
+# 18 10101Agriculture    score   300
+# 19 10101Agriculture    score   302
+# 20 10101Agriculture    score   303
+
+# Combine "cutoff", "quality" and "size" together
+cutoff_Bottom_To_Top<- cast(value_Bottom_To_Top, choice~variable, min)
+head(cutoff_Bottom_To_Top,20)
+
+#            choice        score
+#1     100101General Arts   198
+#2   100101Home Economics   199
+#3        100101Technical   201
+#4      100102Agriculture   273
+#5         100102Business   283
+#6     100102General Arts   291
+#7  100102General Science   273
+#8   100102Home Economics   262
+#9      100102Visual Arts   250
+#10    100104General Arts   319
+#11 100104General Science   313
+#12  100104Home Economics   282
+#13        100105Business   251
+#14    100105General Arts   258
+#15  100105Home Economics   242
+#16     100106Agriculture   223
+#17        100106Business   238
+#18    100106General Arts   248
+#19        100201Business   288
+#20    100201General Arts   319
+
+Average_quality_Bottom_To_Top<- cast(value_Bottom_To_Top, choice~variable, mean)
+head(Average_quality_Bottom_To_Top,20)
+#             choice        score
+#1     100101General Arts 244.1923
+#2   100101Home Economics 228.9744
+#3        100101Technical 235.1020
+#4      100102Agriculture 292.7816
+#5         100102Business 303.1294
+#6     100102General Arts 310.4706
+#7  100102General Science 298.5843
+#8   100102Home Economics 279.0000
+#9      100102Visual Arts 273.0714
+#10    100104General Arts 335.9070
+#11 100104General Science 333.7500
+#12  100104Home Economics 309.3556
+#13        100105Business 267.6184
+#14    100105General Arts 274.8182
+#15  100105Home Economics 257.7342
+#16     100106Agriculture 240.6250
+#17        100106Business 253.5385
+#18    100106General Arts 268.9750
+#19        100201Business 314.5789
+#20    100201General Arts 339.0000
+
+Number_size_Bottom_To_Top<- cast(value_Bottom_To_Top, choice~variable, length)
+head(Number_size_Bottom_To_Top,20)
+#            choice         score
+#1     100101General Arts    78
+#2   100101Home Economics    39
+#3        100101Technical    49
+#4      100102Agriculture    87
+#5         100102Business    85
+#6     100102General Arts    85
+#7  100102General Science    89
+#8   100102Home Economics    44
+#9      100102Visual Arts    42
+#10    100104General Arts    43
+#11 100104General Science    44
+#12  100104Home Economics    45
+#13        100105Business    76
+#14    100105General Arts    77
+#15  100105Home Economics    79
+#16     100106Agriculture    40
+#17        100106Business    39
+#18    100106General Arts    40
+#19        100201Business    76
+#20    100201General Arts    39
+
+# Combined three "choices" together
+cutoff_quality_size<- cbind(cutoff, quality, size)
+# Combined three choices into one choices
+cutoff_quality_size_combined<- cutoff_quality_size[ ,c(-3,-5)]
+head(cutoff_quality_size_combined)
+head(cutoff_quality_size_combined, 20)
+#            choice        score score.1    score.2
+#1     100101General Arts   198 244.1923      78
+#2   100101Home Economics   199 228.9744      39
+#3        100101Technical   201 235.1020      49
+#4      100102Agriculture   273 292.7816      87
+#5         100102Business   283 303.1294      85
+#6     100102General Arts   291 310.4706      85
+#7  100102General Science   273 298.5843      89
+#8   100102Home Economics   262 279.0000      44
+#9      100102Visual Arts   250 273.0714      42
+#10    100104General Arts   319 335.9070      43
+#11 100104General Science   313 333.7500      44
+#12  100104Home Economics   282 309.3556      45
+#13        100105Business   251 267.6184      76
+#14    100105General Arts   258 274.8182      77
+#15  100105Home Economics   242 257.7342      79
+#16     100106Agriculture   223 240.6250      40
+#17        100106Business   238 253.5385      39
+#18    100106General Arts   248 268.9750      40
+#19        100201Business   288 314.5789      76
+#20    100201General Arts   319 339.0000      39
+
+# Rename three "socres"
+names(cutoff_quality_size_combined)[2:4]<-c("cutoff_Low to Top","quality_Average Score", "size_Number of Admission")
+
+# Last step: merge Final list and Final score
+Whole_socresheet <- merge(Final_list, cutoff_quality_size_combined, by="choice")
+Result_Merge_View <- merge(Whole_socresheet, datasss, by="schoolcode")
+# Skip the same part and get the final result
+Final_Result<- unique(merge(Whole_socresheet, datasss, by="schoolcode"))
+print(Final_Result)
+head(Final_Result, 20)
+
+# schoolcode        choice       ID    score agey  male    choicepgm          jssdistrict     rankplace             rank
+#  10101      10101Agriculture 230518   288   15    1     Agriculture     Accra Metropolitan      3           10101Agriculture
+#  10101      10101Agriculture 230518   288   15    1     Agriculture     Accra Metropolitan      3           10101Agriculture
+#  10101      10101Agriculture 230518   288   15    1     Agriculture     Accra Metropolitan      3           10101Agriculture
+#  10101      10101Agriculture 230518   288   15    1     Agriculture     Accra Metropolitan      3           10101Agriculture
+#  10101      10101Agriculture 230518   288   15    1     Agriculture     Accra Metropolitan      3           10101Agriculture
+#  10101      10101Agriculture 230518   288   15    1     Agriculture     Accra Metropolitan      3           10101Agriculture
+#  10101      10101Agriculture 230518   288   15    1     Agriculture     Accra Metropolitan      3           10101Agriculture
+#  10101      10101Agriculture 230518   288   15    1     Agriculture     Accra Metropolitan      3           10101Agriculture
+#  10101      10101Agriculture 230518   288   15    1     Agriculture     Accra Metropolitan      3           10101Agriculture
+#  10101      10101Agriculture 230518   288   15    1     Agriculture     Accra Metropolitan      3           10101Agriculture
+#  10101      10101Agriculture 230518   288   15    1     Agriculture     Accra Metropolitan      3           10101Agriculture
+#  10101      10101Agriculture 230518   288   15    1     Agriculture     Accra Metropolitan      3           10101Agriculture
+#  10101      10101Agriculture 230756   288   14    0     Agriculture     Accra Metropolitan      3           10101Agriculture
+#  10101      10101Agriculture 230756   288   14    0     Agriculture     Accra Metropolitan      3           10101Agriculture
+#  10101      10101Agriculture 230756   288   14    0     Agriculture     Accra Metropolitan      3           10101Agriculture
+#  10101      10101Agriculture 230756   288   14    0     Agriculture     Accra Metropolitan      3           10101Agriculture
+#  10101      10101Agriculture 230756   288   14    0     Agriculture     Accra Metropolitan      3           10101Agriculture
+#  10101      10101Agriculture 230756   288   14    0     Agriculture     Accra Metropolitan      3           10101Agriculture
+#  10101      10101Agriculture 230756   288   14    0     Agriculture     Accra Metropolitan      3           10101Agriculture
+#  10101      10101Agriculture 230756   288   14    0     Agriculture     Accra Metropolitan      3           10101Agriculture
+
+
+
+# cutoff_Low to Top   quality_Average   Score size_Number of Admission    X.y                     schoolname
+#       288                 309.0889                45                   3247                                       
+#       288                 309.0889                45                   3560                                       
+#       288                 309.0889                45                   6031                                       
+#       288                 309.0889                45                   3881                                       
+#       288                 309.0889                45                   408       EBENEZER SENIOR HIGH. SCHOOL, DANSOMAN
+#       288                 309.0889                45                   2881                                       
+#       288                 309.0889                45                   328       EBENEZER SENIOR HIGH. SCHOOL, DANSOMAN
+#       288                 309.0889                45                   453       EBENEZER SENIOR HIGH. SCHOOL, DANSOMAN
+#       288                 309.0889                45                   590       EBENEZER SENIOR HIGH. SCHOOL, DANSOMAN
+#       288                 309.0889                45                   552       EBENEZER SENIOR HIGH. SCHOOL, DANSOMAN
+#       288                 309.0889                45                   3887                                       
+#       288                 309.0889                45                   472       EBENEZER SENIOR HIGH. SCHOOL, DANSOMAN
+#       288                 309.0889                45                   3247                                       
+#       288                 309.0889                45                   3560                                       
+#       288                 309.0889                45                   6031                                       
+#       288                 309.0889                45                   3881                                       
+#       288                 309.0889                45                   408       EBENEZER SENIOR HIGH. SCHOOL, DANSOMAN
+#       288                 309.0889                45                   2881                                       
+#       288                 309.0889                45                   328       EBENEZER SENIOR HIGH. SCHOOL, DANSOMAN
+#       288                 309.0889                45                   453       EBENEZER SENIOR HIGH. SCHOOL, DANSOMAN
+
+#   sssdistrict         ssslong       ssslat
+#   Accra Metro            NA           NA
+#   Accra Metro            NA           NA
+#   Accra Metro            NA           NA
+#   Accra Metro            NA           NA
+#   Accra Metropolitan  -0.1971153   5.607396
+#   Accra Metro            NA           NA
+#   Accra Metropolitan  -0.1971153   5.607396
+#   Accra Metropolitan  -0.1971153   5.607396
+#   Accra Metropolitan  -0.1971153   5.607396
+#   Accra Metropolitan  -0.1971153   5.607396
+#   Accra Metro            NA           NA
+#   Accra Metropolitan  -0.1971153   5.607396
+#   Accra Metro            NA           NA
+#   Accra Metro            NA           NA
+#   Accra Metro            NA           NA
+#   Accra Metro            NA           NA
+#   Accra Metropolitan  -0.1971153   5.607396
+#   Accra Metro            NA           NA
+#   Accra Metropolitan  -0.1971153   5.607396
+#   Accra Metropolitan  -0.1971153   5.607396
+
+#================================================================================================
+#================================================================================================
+
+##/ Exercise Three
+# Merge the result of Exercise and dataset "datajss"
+Distance <- merge(Final_Result, datajss, by="jssdistrict")
+head(Distance, 20)
+Distance_X_Bottom_To_Top <- Distance[order(Distance$X),]
+# Create a new variable "Dist" within The newly created dataset "Distance_X_Bottom_To_Top"
+Distance_X_Bottom_To_Top$Dist <- sqrt(((69.172*(Distance_X_Bottom_To_Top$ssslong - Distance_X_Bottom_To_Top$point_x)*cos(Distance_X_Bottom_To_Top$point_y/57.3))^2+(69.172*(Distance_X_Bottom_To_Top$ssslat-Distance_X_Bottom_To_Top$point_y))^2))
+head(Distance_X_Bottom_To_Top$Dist, 20)
+head(Distance_X_Bottom_To_Top, 20)
+
+#            sssdistrict   ssslong   ssslat    X   point_x  point_y     Dist
+# 1029181       Kpando    0.2673851 6.896852   1 0.2076307 6.375762   36.27809
+# 1029182       Kpando    0.2673851 6.896852   1 0.2076307 6.375762   36.27809
+# 1029183      South Dayi        NA       NA   1 0.2076307 6.375762       NA
+# 1029184    Ho Municipal 0.5261422 6.717607   1 0.2076307 6.375762   32.22676
+# 1029185      Asuogyaman        NA       NA   1 0.2076307 6.375762       NA
+# 1029186          Kpando        NA       NA   1 0.2076307 6.375762       NA
+# 1029187      South Dayi        NA       NA   1 0.2076307 6.375762       NA
+# 1029188          Kpando 0.2673851 6.896852   1 0.2076307 6.375762   36.27809
+# 1029189    Ho Municipal        NA       NA   1 0.2076307 6.375762       NA
+# 1029190          Kpando 0.2673851 6.896852   1 0.2076307 6.375762   36.27809
+# 1029191      South Dayi        NA       NA   1 0.2076307 6.375762       NA
+# 1029192          Kpando        NA       NA   1 0.2076307 6.375762       NA
+# 1029193      South Dayi        NA       NA   1 0.2076307 6.375762       NA
+# 1029194          Kpando 0.2673851 6.896852   1 0.2076307 6.375762   36.27809
+# 1029195          Kpando 0.2673851 6.896852   1 0.2076307 6.375762   36.27809
+# 1029196          Kpando        NA       NA   1 0.2076307 6.375762       NA
+# 1029197      South Dayi        NA       NA   1 0.2076307 6.375762       NA
+# 1029198          Kpando 0.2673851 6.896852   1 0.2076307 6.375762   36.27809
+# 1029199      South Dayi        NA       NA   1 0.2076307 6.375762       NA
+# 1029200          Kpando        NA       NA   1 0.2076307 6.375762       NA
+
+##/ Exercise Four
+# On the basis of "X" from the lowest to the highest, variable "rankplace" shall also be dealed with the same way.
+Rank_Bottom_To_Top <- Distance_X_Bottom_To_Top[order(Distance_X_Bottom_To_Top$rankplace, Distance_X_Bottom_To_Top$X),]
+
+mean(Rank_Bottom_To_Top$`cutoff_Low to Top`[Rank_Bottom_To_Top$rankplace== 1])
+# [1] 279.8704
+sd(Rank_Bottom_To_Top$`cutoff_Low to Top`[Rank_Bottom_To_Top$rankplace== 1])
+# [1] 57.34419
+mean(Rank_Bottom_To_Top$`quality_Average Score`[Rank_Bottom_To_Top$rankplace== 1])
+# [1] 306.5762
+sd(Rank_Bottom_To_Top$`quality_Average Score`[Rank_Bottom_To_Top$rankplace== 1])
+# [1] 50.57871
+mean(Rank_Bottom_To_Top$`size_Number of Admission`[Rank_Bottom_To_Top$rankplace== 1])
+# [1] 93.04011
+sd(Rank_Bottom_To_Top$`size_Number of Admission`[Rank_Bottom_To_Top$rankplace== 1])
+# [1] 54.78786
+
+mean(Rank_Bottom_To_Top$`cutoff_Low to Top`[Rank_Bottom_To_Top$rankplace== 2])
+# [2] 277.1518
+sd(Rank_Bottom_To_Top$`cutoff_Low to Top`[Rank_Bottom_To_Top$rankplace== 2])
+# [2] 50.97056
+mean(Rank_Bottom_To_Top$`quality_Average Score`[Rank_Bottom_To_Top$rankplace== 2])
+# [2] 302.9698
+sd(Rank_Bottom_To_Top$`quality_Average Score`[Rank_Bottom_To_Top$rankplace== 2])
+# [2] 44.17802
+mean(Rank_Bottom_To_Top$`size_Number of Admission`[Rank_Bottom_To_Top$rankplace== 2])
+# [2] 93.68101
+sd(Rank_Bottom_To_Top$`size_Number of Admission`[Rank_Bottom_To_Top$rankplace== 2])
+# [2] 54.99501
+
+mean(Rank_Bottom_To_Top$`cutoff_Low to Top`[Rank_Bottom_To_Top$rankplace== 3])
+# [3] 262.9438
+sd(Rank_Bottom_To_Top$`cutoff_Low to Top`[Rank_Bottom_To_Top$rankplace== 3])
+# [3] 43.62898
+mean(Rank_Bottom_To_Top$`quality_Average Score`[Rank_Bottom_To_Top$rankplace== 3])
+# [3] 290.079
+sd(Rank_Bottom_To_Top$`quality_Average Score`[Rank_Bottom_To_Top$rankplace== 3])
+# [3] 37.06944
+mean(Rank_Bottom_To_Top$`size_Number of Admission`[Rank_Bottom_To_Top$rankplace== 3])
+# [3] 91.81311
+sd(Rank_Bottom_To_Top$`size_Number of Admission`[Rank_Bottom_To_Top$rankplace== 3])
+# [3] 55.59272
+
+mean(Rank_Bottom_To_Top$`cutoff_Low to Top`[Rank_Bottom_To_Top$rankplace== 4])
+# [4] 250.1061
+sd(Rank_Bottom_To_Top$`cutoff_Low to Top`[Rank_Bottom_To_Top$rankplace== 4])
+# [4] 37.67753
+mean(Rank_Bottom_To_Top$`quality_Average Score`[Rank_Bottom_To_Top$rankplace== 4])
+# [4] 278.8267
+sd(Rank_Bottom_To_Top$`quality_Average Score`[Rank_Bottom_To_Top$rankplace== 4])
+# [4] 31.49667
+mean(Rank_Bottom_To_Top$`size_Number of Admission`[Rank_Bottom_To_Top$rankplace== 4])
+# [4] 88.3362
+sd(Rank_Bottom_To_Top$`size_Number of Admission`[Rank_Bottom_To_Top$rankplace== 4])
+# [4] 56.27731
+
+mean(Rank_Bottom_To_Top$`cutoff_Low to Top`[Rank_Bottom_To_Top$rankplace== 5])
+# [5] 211.1775
+sd(Rank_Bottom_To_Top$`cutoff_Low to Top`[Rank_Bottom_To_Top$rankplace== 5])
+# [5] 7.996356
+mean(Rank_Bottom_To_Top$`quality_Average Score`[Rank_Bottom_To_Top$rankplace== 5])
+# [4] 252.9305
+sd(Rank_Bottom_To_Top$`quality_Average Score`[Rank_Bottom_To_Top$rankplace== 5])
+# [4] 13.02076
+mean(Rank_Bottom_To_Top$`size_Number of Admission`[Rank_Bottom_To_Top$rankplace== 5])
+# [4] 68.32309
+sd(Rank_Bottom_To_Top$`size_Number of Admission`[Rank_Bottom_To_Top$rankplace== 5])
+# [4] 48.39169
+
+mean(Rank_Bottom_To_Top$`cutoff_Low to Top`[Rank_Bottom_To_Top$rankplace== 6])
+# [6] 211.2391
+sd(Rank_Bottom_To_Top$`cutoff_Low to Top`[Rank_Bottom_To_Top$rankplace== 6])
+# [6] 8.093442
+mean(Rank_Bottom_To_Top$`quality_Average Score`[Rank_Bottom_To_Top$rankplace== 6])
+# [6] 250.225
+sd(Rank_Bottom_To_Top$`quality_Average Score`[Rank_Bottom_To_Top$rankplace== 6])
+# [6] 11.02465
+mean(Rank_Bottom_To_Top$`size_Number of Admission`[Rank_Bottom_To_Top$rankplace== 6])
+# [6] 59.26986
+sd(Rank_Bottom_To_Top$`size_Number of Admission`[Rank_Bottom_To_Top$rankplace== 6])
+# [6] 46.24914
+
+
+#==============================================================
+#==============================================================
+
+
+#/ Redo all the processes by replacing variable "rankplace" with "score" from the lowest to the highest by the mark of "x"
+Score_Bottom_To_Top <- Distance_X_Bottom_To_Top[order(Distance_X_Bottom_To_Top$score, Distance_X_Bottom_To_Top$X),]
+#/ Find out five quantile benchmarks
+Quantiles <- quantile(Score_Bottom_To_Top$score)
+head(Quantiles)
+# 0%  25%  50%  75% 100% 
+#185  256  288  327  469 
+
+mean(Score_Bottom_To_Top$`cutoff_Low to Top`[Score_Bottom_To_Top$score < Quantiles[2]])
+# [0.25] 217.7775
+sd(Score_Bottom_To_Top$`cutoff_Low to Top`[Score_Bottom_To_Top$score < Quantiles[2]])
+# [0.25] 14.31949
+mean(Score_Bottom_To_Top$`quality_Average Score`[Score_Bottom_To_Top$score < Quantiles[2]])
+# [0.25] 252.3234
+sd(Score_Bottom_To_Top$`quality_Average Score`[Score_Bottom_To_Top$score < Quantiles[2]])
+# [0.25] 12.39697
+mean(Score_Bottom_To_Top$`size_Number of Admission`[Score_Bottom_To_Top$score < Quantiles[2]])
+# [0.25] 74.88889
+sd(Score_Bottom_To_Top$`size_Number of Admission`[Score_Bottom_To_Top$score < Quantiles[2]])
+# [0.25] 14.31949
+
+mean(Score_Bottom_To_Top$cutoff[Score_Bottom_To_Top$score < Quantiles[3]])
+# [0.5] 229.8652
+sd(Score_Bottom_To_Top$cutoff[Score_Bottom_To_Top$score < Quantiles[3]])
+# [0.5] 22.6533
+mean(Score_Bottom_To_Top$`quality_Average Score`[Score_Bottom_To_Top$score < Quantiles[3]])
+# [0.25] 262.2342
+sd(Score_Bottom_To_Top$`quality_Average Score`[Score_Bottom_To_Top$score < Quantiles[3]])
+# [0.25] 17.99262
+mean(Score_Bottom_To_Top$`size_Number of Admission`[Score_Bottom_To_Top$score < Quantiles[3]])
+# [0.25] 82.09206
+sd(Score_Bottom_To_Top$`size_Number of Admission`[Score_Bottom_To_Top$score < Quantiles[3]])
+# [0.25] 55.48278
+
+mean(Score_Bottom_To_Top$cutoff[Score_Bottom_To_Top$score < Quantiles[4]])
+# [0.75] 244.708
+sd(Score_Bottom_To_Top$cutoff[Score_Bottom_To_Top$score < Quantiles[4]])
+# [0.75] 32.35489
+mean(Score_Bottom_To_Top$`quality_Average Score`[Score_Bottom_To_Top$score < Quantiles[4]])
+# [0.25] 274.8775
+sd(Score_Bottom_To_Top$`quality_Average Score`[Score_Bottom_To_Top$score < Quantiles[4]])
+# [0.25] 26.4583
+mean(Score_Bottom_To_Top$`size_Number of Admission`[Score_Bottom_To_Top$score < Quantiles[4]])
+# [0.25] 87.61462
+sd(Score_Bottom_To_Top$`size_Number of Admission`[Score_Bottom_To_Top$score < Quantiles[4]])
+# [0.25] 56.53001
+
+mean(Score_Bottom_To_Top$cutoff[Score_Bottom_To_Top$score < Quantiles[5]])
+# [1.0] 266.5514
+sd(Score_Bottom_To_Top$cutoff[Score_Bottom_To_Top$score < Quantiles[5]])
+# [1.0] 51.04901
+mean(Score_Bottom_To_Top$`quality_Average Score`[Score_Bottom_To_Top$score < Quantiles[5]])
+# [0.25] 294.2175
+sd(Score_Bottom_To_Top$`quality_Average Score`[Score_Bottom_To_Top$score < Quantiles[5]])
+# [0.25] 44.18152
+mean(Score_Bottom_To_Top$`size_Number of Admission`[Score_Bottom_To_Top$score < Quantiles[5]])
+# [0.25] 90.61314
+sd(Score_Bottom_To_Top$`size_Number of Admission`[Score_Bottom_To_Top$score < Quantiles[5]])
+# [0.25] 55.32259
+
+#==============================================================
+#==============================================================
+
+
+getwd()
+setwd(dir = "/Users/zg66/Desktop/Econ613-master")
+
+#// Exercise Five
+help(runif)
+set.seed(123)
+x1 = runif(10000, 1, 3)
+help(rgamma)
+x2 = rgamma(10000, shape = 3, rate = 1/2)
+help("rbinom")
+x3 = rbinom(10000, size = 1, prob = 0.3)
+help(rnorm)
+error = rnorm(10000, mean = 2, sd = 1)
+#/ The Function of Y
+yhat = 0.5 + 1.2*x1 - 0.9*x2 + 0.1*x3 + error
+help(as.numeric)
+ydum <- as.numeric(yhat >= mean(yhat))
+
+
+#// Exercise Six
+#/ do not use OLS function
+betay_x1 = sum((yhat - mean(yhat)) * (x1 - mean(x1))) / sum (((x1 - mean(x1))^2))
+head(betay_x1)
+# [1] 1.257645
+#/ Here betay_x1 approaches 1.26, which is very close to 1.2.
+
+#/  define X matrix and y vector
+X_All <- as.matrix(cbind(1,x1, x2, x3))
+y_All <- as.matrix(yhat)
+beta_All <- solve(t(X_All)%*%X_All)%*%t(X_All)%*%y_All
+head(beta_All)
+#        [,1]
+#     2.4907098
+# x1  1.1976226
+# x2 -0.8970514
+# x3  0.0875850
+
+#/ Now use pre-programmed OLS function to have a double check
+simplifed_model <- lm(yhat ~ x1)
+simplifed_model$coefficients
+All_model <- lm(yhat ~ x1 + x2 + x3)
+All_model$coefficients
+#(Intercept)          x1          x2          x3 
+#  2.4907098   1.1976226  -0.8970514   0.0875850 
+#/ The corresponding results are exactly the same.
+
+#/ standard error
+# Residuals
+resid <- y_All - X_All %*% beta_All
+# Estimate of sigma_2
+sigma2_hat <- (t(resid) %*% resid) / (nrow(X_All) - ncol(X_All))
+sigma2_hat
+# Estimate of V[\hat{\bbeta}]
+vcov_beta_hat <- c(sigma2_hat) * solve(t(X_All) %*% X_All)
+vcov_beta_hat
+# Estimate of standard errors
+sqrt(diag(vcov_beta_hat))
+#                     x1          x2          x3 
+#0.040620200 0.017358550 0.002876599 0.021694530 
+
+#/ Exercise SEVEN
+#/ OLS Linear probability model
+reg_OLS <- lm(ydum ~ 1 + x1 + x2 + x3)
+summary(reg_OLS)
+unname(coef(reg_OLS))
+# [1]  0.885823611  0.146193985 -0.102832042 -0.008053057
+
+#/ OLS Linear probability model_OP
+# initial guess on coefficients
+reg_probit_coefficients <- glm(ydum ~ 1 + x1 + x2 + x3,family = binomial(link = "probit"))$coefficient
+
+Y_OLS = ydum
+X1_OLS = x1
+X2_OLS = x2
+X3_OLS = x3
+reg_OLS_coefficients <- lm(ydum ~ 1 + x1 + x2 + x3)$coefficients
+summary(X1_OLS)
+summary(X2_OLS)
+summary(X3_OLS)
+
+# negative log-likelihood
+OLS_Function <- function(par, Y_OLS, X1_OLS, X2_OLS, X3_OLS){
+  
+  alpha <- par[1]
+  beta1 <- par[2]
+  beta2 <- par[3]
+  beta3 <- par[4]
+  sigma <- par[5]
+  
+  R = Y_OLS - alpha - beta1 * X1_OLS - beta2 * X2_OLS - beta3 * X3_OLS 
+  
+  -sum(dnorm(R, mean = 0, sigma, log = TRUE))
+}
+
+est_alpha <- mean(Y_OLS)
+est_beta1 <- mean(Y_OLS[X1_OLS >= 2.487 & X1_OLS <= 3.000]) - mean(Y_OLS[X1_OLS >= 1.000 & X1_OLS <= 1.506])
+est_beta2 <- mean(Y_OLS[X2_OLS >= 7.7056 & X2_OLS <= 10]) - mean(Y_OLS[X2_OLS >= 0.1266 & X2_OLS <= 3.4737])
+est_beta3 <- mean(Y_OLS[X3_OLS >= 0.5 & X3_OLS <= 1.0000]) - mean(Y_OLS[X3_OLS >= 0.000 & X3_OLS <= 0.3011])
+est_sigma <- sd(Y_OLS)
+
+reg_OLS_OP <- optim(par = c(alpha = est_alpha, 
+                            beta1 = est_beta1, 
+                            beta2 = est_beta2,
+                            beta3 = est_beta3,
+                            sigma = est_sigma), fn = OLS_Function, X1_OLS = x1, X2_OLS = x2, X3_OLS = x3, Y_OLS = ydum)
+reg_OLS_OP$par
+#   alpha         beta1        beta2        beta3        sigma 
+# 0.886603815  0.146120426 -0.102847063 -0.008958128  0.334971033  
+
+reg_OLS <- lm(ydum ~ 1 + x1 + x2 + x3)
+unname(coef(reg_OLS))
+# [1]  0.885823611  0.146193985 -0.102832042 -0.008053057
+
+#/ probit model_GLM
+reg_probit <- glm(ydum ~ 1 + x1 + x2 + x3,family = binomial(link = "probit"))
+summary(reg_probit)
+reg_probit_coefficients <- glm(ydum ~ 1 + x1 + x2 + x3,family = binomial(link = "probit"))$coefficient
+
+#/ probit model_optimization
+# initial guess on coefficients
+reg_OLS_coefficients <- lm(ydum ~ 1 + x1 + x2 + x3)$coefficients
+# model matrix `X` and response `Y`
+X_probit <- cbind(1, x1, x2, x3)
+Y_probit <- ydum
+# number of regression coefficients
+K <- ncol(X_probit)
+
+# negative log-likelihood
+probit.nll <- function (beta) {
+  # linear predictor
+  eta <- X_probit %*% beta
+  # probability
+  p <- pnorm(eta)
+  p[p>0.999999] = 0.999999
+  p[p<0.000001] = 0.000001
+  # negative log-likelihood
+  -sum((1 - Y_probit) * log(1 - p) + Y_probit * log(p))
+}
+
+# gradient function
+# requires model matrix `X_probit` and binary response Y_probit`
+probit.gr <- function (beta) {
+  # linear predictor
+  eta <- X_probit %*% beta
+  # probability
+  p <- pnorm(eta)
+  # chain rule
+  u <- dnorm(eta) * (Y_probit - p) / (p * (1 - p))
+  # gradient
+  -crossprod(X_probit, u)
+}
+
+reg_probit_op <- optim(reg_OLS_coefficients, probit.nll, gr = probit.gr, method = "BFGS", hessian = TRUE)
+
+# comparison: Exactly the same
+unname(coef(reg_probit))
+# [1]  3.04273897  1.17235282 -0.90546040 -0.01124978
+reg_probit_op$par
+#(Intercept)          x1          x2          x3 
+# 3.04273899  1.17235283 -0.90546035 -0.01124978
+
+#/ logit model_GLM
+reg_logit <- glm(ydum ~ 1 + x1 + x2 + x3,family = binomial(link = "logit"))
+summary(reg_logit)
+unname(coef(reg_logit))
+# [1]  5.42654014  2.10059417 -1.61850702 -0.01963017
+
+#/ logit model_OP
+#install.packages("optimx")
+#install.packages("aplore3")
+#install.packages("numDeriv")
+#install.packages("dplyr")
+#library(aplore3)
+library(optimx)
+#library(numDeriv)
+#library(dplyr)
+
+# Define log-likelihood function for logistic regression model
+logit_Function <- function(par){
+  
+  alpha <- par[1]
+  beta1 <- par[2]
+  beta2 <- par[3]
+  beta3 <- par[4]
+  
+  Y_logit  <- ydum
+  x1_logit <- x1
+  x2_logit <- x2
+  x3_logit <- x3
+  
+  xb <- alpha + beta1 * x1_logit + beta2 * x2_logit + beta3 * x3_logit
+  pi <- exp(xb) / (1 + exp(xb))
+  pi[pi > 0.999999] = 0.999999
+  pi[pi < 0.000001] = 0.000001
+  -sum(Y_logit * log(pi) + (1 - Y_logit) * log(1 - pi))
+}
+
+# Define fradient function for logistic regression model
+grad_logit <- function(par){
+  
+  alpha <- par[1]
+  beta1 <- par[2]
+  beta2 <- par[3]
+  beta3 <- par[4]
+  
+  Y_logit  <- ydum
+  x1_logit <- x1
+  x2_logit <- x2
+  x3_logit <- x3
+  
+  n <- length(par[1])
+  gg <- as.vector(rep(0, n))
+  
+  xb <- alpha + beta1 * x1_logit + beta2 * x2_logit + beta3 * x3_logit
+  pi <- exp(xb) / (1 + exp(xb))
+  
+  gg[1] <- -sum(Y_logit - pi)
+  gg[2] <- -sum(x1_logit * (Y_logit - pi))
+  gg[3] <- -sum(x2_logit * (Y_logit - pi))
+  gg[4] <- -sum(x3_logit * (Y_logit - pi))
+  
+  return(gg)
+}
+
+# Manual logistic regression
+reg_logit_OP <- optimx(reg_OLS_coefficients, logit_Function, gr = grad_logit, control = list(trace = 0, all.methods = TRUE))
+summary(reg_logit_OP, order = "convcode")
+#                  X.Intercept.   x1          x2           x3         
+#     BFGS          5.4265418 2.1005953  -1.6185076   -0.01963006
+
+reg_logit <- glm(ydum ~ 1 + x1 + x2 + x3,family = binomial(link = "logit"))
+unname(coef(reg_logit))
+# [1]  5.42654014  2.10059417 -1.61850702 -0.01963017
+coef(reg_logit)
+#(Intercept)          x1          x2          x3 
+#5.42654014   2.10059417 -1.61850702 -0.01963017 
+
+#/ Interpretation
+reg_OLS <- lm(ydum ~ 1 + x1 + x2 + x3)
+coef(reg_OLS)
+# (Intercept)           x1           x2           x3 
+# 0.885823611      0.146193985  -0.102832042 -0.008053057 
+reg_probit <- glm(ydum ~ 1 + x1 + x2 + x3,family = binomial(link = "probit"))
+coef(reg_probit)
+# (Intercept)          x1          x2          x3 
+# 3.04273897       1.17235282 -0.90546040 -0.01124978
+reg_logit <- glm(ydum ~ 1 + x1 + x2 + x3,family = binomial(link = "logit"))
+coef(reg_logit)
+# (Intercept)          x1          x2          x3 
+#  5.42654014      2.10059417 -1.61850702 -0.01963017 
+#/ The coefficients between probit regression and logit model are quite similar
+#/ However, the OLS coefficients are smaller than the corresponding logit and probit figures.
+#/ But for all these three models, the coefficient of each individual variable in any model remains negative or positive simultaneously.  
+
+# For simplicity, I will use the variable "x1" as an example. 
+#/ OLS Estimation
+#/ The coefficients of "x1" means that, holding other variables constant, one unit increase of x1 will lead to approximately 14% increase of ydum.
+
+#/ probit Estimation and logit Estimation
+#/ The coefficients of "x1" means nothing in either probit model or logit model. 
+#/ It only tells that, holding other variables constant, a positive "x1" coefficient means that an increase in the "x1" predictor leads to an increase in the predicted "ydum" probability
+
+#/ Significance
+#/ In each individual regression model, the coefficients of "Interpret", "x1", "x2" are statistically significant at 0.1% significance level. However, the coefficient of "x3" in each regression remains statistical insignificant.
+
+
+##/ (Average) Marginal Effects
+##/ do it by hand
+#/ Probit
+reg_probit <- glm(ydum ~ 1 + x1 + x2 + x3,family = binomial(link = "probit"))
+marginal_effects_Estimation_probit <- function(reg_probit,sims=10000){
+  set.seed(1234)
+  pdf <- ifelse(as.character(reg_probit$call)[3]=="binomial(link = \"probit\")",
+                mean(dnorm(predict(reg_probit, type = "link"))),
+                mean(dlogis(predict(reg_probit, type = "link"))))
+  pdfsd <- ifelse(as.character(reg_probit$call)[3]=="binomial(link = \"probit\")",
+                  sd(dnorm(predict(reg_probit, type = "link"))),
+                  sd(dlogis(predict(reg_probit, type = "link"))))
+  marginal.effects <- pdf*coef(reg_probit)
+  sim <- matrix(rep(NA,sims*length(coef(reg_probit))), nrow=sims)
+  for(i in 1:length(coef(reg_probit))){
+    sim[,i] <- rnorm(sims,coef(reg_probit)[i],diag(vcov(reg_probit)^0.5)[i])
+  }
+  pdfsim <- rnorm(sims,pdf,pdfsd)
+  sim.se <- pdfsim*sim
+  res <- cbind(marginal.effects,sd(sim.se))
+  colnames(res)[2] <- "standard.error"
+  ifelse(names(reg_probit$coefficients[1])=="(Intercept)",
+         return(res[2:nrow(res),]),return(res))
+}
+
+marginal_effects_Estimation_probit(reg_probit)
+# probit  marginal.effects 
+# x1       0.14380827     
+# x2      -0.11106954      
+# x3      -0.00137997      
+
+#/ Logit
+reg_logit <- glm(ydum ~ 1 + x1 + x2 + x3,family = binomial(link = "logit"))
+marginal_effects_Estimation_logit <- function(reg_logit,sims=10000){
+  set.seed(1234)
+  pdf_logit <- ifelse(as.character(reg_logit$call)[3]=="binomial(link = \"logit\")",
+                mean(dnorm(predict(reg_logit, type = "link"))),
+                mean(dlogis(predict(reg_logit, type = "link"))))
+  pdf_logit_sd <- ifelse(as.character(reg_logit$call)[3]=="binomial(link = \"logit\")",
+                  sd(dnorm(predict(reg_logit, type = "link"))),
+                  sd(dlogis(predict(reg_logit, type = "link"))))
+  marginal.effects <- pdf_logit*coef(reg_logit)
+  sim <- matrix(rep(NA,sims*length(coef(reg_logit))), nrow=sims)
+  for(i in 1:length(coef(reg_logit))){
+    sim[,i] <- rnorm(sims,coef(reg_logit)[i],diag(vcov(reg_logit)^0.5)[i])
+  }
+  pdfsim <- rnorm(sims,pdf_logit,pdf_logit_sd)
+  sim.se <- pdfsim*sim
+  res <- cbind(marginal.effects,sd(sim.se))
+  colnames(res)[2] <- "standard.error"
+  ifelse(names(reg_logit$coefficients[1])=="(Intercept)",
+         return(res[2:nrow(res),]),return(res))
+}
+
+marginal_effects_Estimation_logit(reg_logit)
+# logit  marginal.effects 
+# x1      0.147623207       
+# x2     -0.113743625       
+# x3     -0.001379547 
+
+# Use the package as a double check
+#/ Probit
+# install.packages("mfx")
+library("mfx")
+x1 = x1
+x2 = x2
+x3 = x3
+ydum = ydum
+data = data.frame(ydum, x1, x2, x3)
+reg_probit <- glm(ydum ~ 1 + x1 + x2 + x3,family = binomial(link = "probit"))
+probitmfx(formula = reg_logit, data = data, atmean = FALSE, robust = TRUE)
+
+#/ Logit
+reg_logit <- glm(ydum ~ 1 + x1 + x2 + x3,family = binomial(link = "logit"))
+logitmfx(formula = reg_logit, data = data, atmean = FALSE, robust = TRUE)
+
+#/ Standard Error
+#/ probit model
+# install.packages("margins")
+library("margins")
+reg_probit <- glm(ydum ~ x1 + x2 + x3,family = binomial(link = "probit"))
+margins(reg_probit)
+Margins_probit <-margins(reg_probit)
+summary(margins(reg_probit))
+# factor     AME     SE         z        p      lower   upper
+#   x1     0.1438  0.0044    32.6602  0.0000   0.1352  0.1524
+#   x2    -0.1111  0.0004  -247.7190  0.0000  -0.1119 -0.1102
+#   x3    -0.0014  0.0057   -0.2419   0.8089  -0.0126  0.0098
+
+#/ logit model
+reg_logit <- glm(ydum ~ x1 + x2 + x3,family = binomial(link = "logit"))
+margins(reg_logit)
+summary(margins(reg_logit))
+# factor     AME     SE         z       p       lower   upper
+#   x1     0.1440  0.0044   32.6564   0.0000   0.1354  0.1527
+#   x2    -0.1110  0.0004 -246.8795   0.0000  -0.1119 -0.1101
+#   x3    -0.0013  0.0057   -0.2359   0.8135  -0.0125  0.0098
+
